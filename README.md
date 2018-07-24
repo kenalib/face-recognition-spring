@@ -15,14 +15,16 @@ mvn package
 java -cp target/face-recognition-demo-1.0-SNAPSHOT.jar com.example.App
 ```
 
-## Use Spring Boot
 
+## Use Spring Boot
 
 ```bash
 # after add stuff in https://spring.io/guides/gs/rest-service/
 mvn spring-boot:run
 curl http://localhost:8080/greeting
 ```
+
+select menu `Build | Build Module 'face-recognition-demo'`
 
 
 ## Reference
