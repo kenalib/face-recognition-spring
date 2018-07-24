@@ -19,6 +19,7 @@
 
   <modules>
     <module>face-recognition-demo-server</module>
+    <module>aliface-wrapper</module>
   </modules>
 
 </project>
