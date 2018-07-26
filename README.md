@@ -26,8 +26,13 @@ curl http://localhost:8080/greeting
 
 select menu `Build | Build Module 'face-recognition-demo'`
 
+```bash
+./mvnw install && ./mvnw spring-boot:run -pl face-recognition-demo-server
+```
+
 
 ## Reference
 
 * https://maven.apache.org/guides/getting-started/maven-in-five-minutes.html
 * https://spring.io/guides/gs/rest-service/
+* https://spring.io/guides/gs/multi-module/
