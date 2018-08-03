@@ -11,14 +11,14 @@ import static org.junit.Assert.assertNotNull;
 
 @RunWith(SpringRunner.class)
 @SpringBootTest("service.message=Hello")
-public class MyServiceTest {
+public class FaceRecognitionServiceTest {
 
     @Autowired
-    private MyService myService;
+    private FaceRecognitionService faceRecognitionService;
 
     @Test
     public void contextLoads() {
-        assertNotNull(myService.message());
+        assertNotNull(faceRecognitionService.message());
     }
 
     @SpringBootApplication

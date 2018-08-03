@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Face Recognition Demo</title>
+</head>
+<body>
+
+
+<h1>Face Recognition Demo</h1>
+
+
+<h2>API</h2>
+
+<ul>
+    <li><a href="/face-recognition/people">people list</a></li>
+</ul>
+
+<hr>
+
+
+<h2>create</h2>
+
+<form method="post" enctype="multipart/form-data" action="/face-recognition/people">
+    name: <input type="text" name="name"/><br>
+    photo: <input type="file" name="photo"/><br>
+    <input type="submit"/>
+</form>
+
+
+<h2>find text</h2>
+
+<form method="post" enctype="multipart/form-data" action="/face-recognition/findAllInImage">
+    photo: <input type="file" name="photo"/><br>
+    <input type="submit"/>
+</form>
+
+
+<h2>find photo</h2>
+
+<form method="post" enctype="multipart/form-data" action="/face-recognition/findAllInImagePhoto">
+    photo: <input type="file" name="photo"/><br>
+    <input type="submit"/>
+</form>
+
+
+<h2>find base64</h2>
+
+<form method="post" enctype="multipart/form-data" action="/face-recognition/findAllInImageBase64">
+    photo: <input type="file" name="photo"/><br>
+    <input type="submit"/>
+</form>
+
+</body>
+</html>
