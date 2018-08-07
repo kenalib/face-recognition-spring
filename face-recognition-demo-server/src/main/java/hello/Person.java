@@ -3,6 +3,7 @@ package hello;
 import org.springframework.data.annotation.CreatedDate;
 import org.springframework.data.annotation.LastModifiedDate;
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
+import org.springframework.util.Base64Utils;
 
 import javax.persistence.*;
 import java.util.Date;
@@ -19,6 +20,8 @@ public class Person {
 
     @Lob
     private byte[] photo;
+
+    private String photoBase64;
 
     @CreatedDate
     private Date createdAt;
@@ -53,16 +56,20 @@ public class Person {
         this.name = name;
     }
 
-    public int getPhoto() {
-        return (photo == null) ? 0 : photo.length;
-    }
-
-    byte[] getPhotoBytes() {
+    public byte[] getPhoto() {
         return photo;
     }
 
     public void setPhoto(byte[] photo) {
         this.photo = photo;
+    }
+
+    public String getPhotoBase64() {
+        return photoBase64;
+    }
+
+    public void setPhotoBase64(String photoBase64) {
+        this.photoBase64 = photoBase64;
     }
 
     @Override

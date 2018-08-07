@@ -7,15 +7,13 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+import org.springframework.util.Base64Utils;
 import org.springframework.web.bind.annotation.*;
 
 import javax.imageio.ImageIO;
 import java.awt.*;
 import java.awt.image.BufferedImage;
-import java.io.ByteArrayInputStream;
-import java.io.ByteArrayOutputStream;
-import java.io.IOException;
-import java.io.InputStream;
+import java.io.*;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
@@ -49,6 +47,22 @@ public class PersonController {
         return person;
     }
 
+    @CrossOrigin(origins = {"http://localhost:4200", "https://faceapp.tk"})
+    @PostMapping("/face-recognition/peopleBase64")
+    @ResponseBody
+    public Person createJson(@RequestBody Person person) {
+        String photoBase64 = person.getPhotoBase64();
+        byte[] photo = Base64Utils.decodeFromString(photoBase64);
+        person.setPhoto(photo);
+        person.setPhotoBase64("");  // no need to save base64 data
+
+        Person savedPerson = personService.save(person);
+        faceRecognitionService.register(savedPerson.getId(), photo);
+
+        return savedPerson;
+    }
+
+    @CrossOrigin(origins = {"http://localhost:4200", "https://faceapp.tk"})
     @GetMapping("/face-recognition/people")
     public Iterable<Person> findAll() {
         return personService.findAll();
@@ -70,9 +84,10 @@ public class PersonController {
     public byte[] findPhoto(@PathVariable UUID id) {
         Optional<Person> person = personService.findById(id);
 
-        return person.map(Person::getPhotoBytes).orElse(null);
+        return person.map(Person::getPhoto).orElse(null);
     }
 
+    @CrossOrigin(origins = {"http://localhost:4200", "https://faceapp.tk"})
     @DeleteMapping("/face-recognition/people/{id}")
     public void delete(@PathVariable UUID id) {
         personService.findById(id).ifPresent(person -> {
@@ -86,17 +101,24 @@ public class PersonController {
         return faceRecognitionService.findAllInImage(imageData);
     }
 
+    @CrossOrigin(origins = {"http://localhost:4200", "https://faceapp.tk"})
     @PostMapping("/face-recognition/findAllInImageBase64")
-    FacePhoto findAllInImageBase64(@RequestPart("photo") byte[] photo) {
+    FacePhoto findAllInImageBase64(@RequestBody String photoBase64) {
+        byte[] photo = Base64Utils.decodeFromString(photoBase64);
+
         List<RecognizedFace> faces = faceRecognitionService.findAllInImage(photo);
+        List<Person> persons = new ArrayList<>();
 
         final byte[][] clone = {photo.clone()};
 
         faces.forEach(face -> {
+            Optional<Person> person = personService.findById(face.getId());
+            person.ifPresent(persons::add);
+
             clone[0] = _writeRect(clone[0], face);
         });
 
-        return new FacePhoto(faces, clone[0]);
+        return new FacePhoto(faces, persons, clone[0]);
     }
 
     @ResponseBody
@@ -114,6 +136,8 @@ public class PersonController {
     }
 
     private byte[] _writeRect(byte[] photo, RecognizedFace face) {
+        ImageType.Format imageFormat = ImageType.getFormat(photo);
+
         InputStream in = new ByteArrayInputStream(photo);
         BufferedImage image;
 
@@ -136,7 +160,7 @@ public class PersonController {
         ByteArrayOutputStream bos = new ByteArrayOutputStream();
 
         try {
-            ImageIO.write(image, "JPEG", bos);
+            ImageIO.write(image, imageFormat.name, bos);
         } catch (IOException e) {
             e.printStackTrace();
         }

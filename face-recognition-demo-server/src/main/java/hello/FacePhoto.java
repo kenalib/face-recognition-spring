@@ -7,11 +7,13 @@ import java.util.List;
 
 public class FacePhoto {
     private List<RecognizedFace> faces;
-    private String imageBase64;
+    private List<Person> persons;
+    private byte[] photo;
 
-    public FacePhoto(List<RecognizedFace> faces, byte[] photo) {
+    public FacePhoto(List<RecognizedFace> faces, List<Person> persons, byte[] photo) {
         this.faces = faces;
-        this.imageBase64 = new String(Base64Utils.encode(photo));
+        this.persons = persons;
+        this.photo = photo;
     }
 
     public List<RecognizedFace> getFaces() {
@@ -22,11 +24,20 @@ public class FacePhoto {
         this.faces = faces;
     }
 
-    public String getImageBase64() {
-        return imageBase64;
+    public List<Person> getPersons() {
+        return persons;
     }
 
-    public void setImageBase64(String imageBase64) {
-        this.imageBase64 = imageBase64;
+    public void setPersons(List<Person> persons) {
+        this.persons = persons;
     }
+
+    public byte[] getPhoto() {
+        return photo;
+    }
+
+    public void setPhoto(byte[] photo) {
+        this.photo = photo;
+    }
+
 }
