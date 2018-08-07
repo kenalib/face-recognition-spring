@@ -1,0 +1,13 @@
+version: '3'
+
+services:
+  api-server:
+    image: kenali/face-recognition-demo-server
+    build:
+      context: ./face-recognition-demo-server
+      args:
+        JAR_FILE: target/face-recognition-demo-server-2.0.3.RELEASE.jar
+    ports:
+      - 8080:8080
+    container_name: face-server
+    restart: always
