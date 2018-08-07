@@ -31,11 +31,6 @@ public class PersonController {
         this.personService = personService;
     }
 
-    @GetMapping("/home")
-    public String home() {
-        return faceRecognitionService.message();
-    }
-
     @PostMapping("/face-recognition/people")
     public Person create(
             @RequestPart("name") String name,

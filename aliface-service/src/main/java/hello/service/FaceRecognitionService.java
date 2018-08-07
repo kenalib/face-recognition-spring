@@ -25,7 +25,6 @@ import java.util.List;
 import java.util.UUID;
 
 @Service
-@EnableConfigurationProperties(ServiceProperties.class)
 public class FaceRecognitionService {
     private static final Logger LOGGER = LoggerFactory.getLogger(FaceRecognitionService.class);
     private static final String ALIFACE_DB_NAME = "visitor";
@@ -41,16 +40,7 @@ public class FaceRecognitionService {
     private boolean recognitionLocalInitialized = false;
     private final Object aliFaceLock = new Object();
 
-    private final ServiceProperties serviceProperties;
-
-    public FaceRecognitionService(ServiceProperties serviceProperties) {
-        this.serviceProperties = serviceProperties;
-    }
-
-    public String message() {
-        LOGGER.info(recognitionLocal.toString());
-        return this.serviceProperties.getMessage();
-    }
+    public FaceRecognitionService() {}
 
     @PostConstruct
     public void initializeAliFace() throws IOException {
