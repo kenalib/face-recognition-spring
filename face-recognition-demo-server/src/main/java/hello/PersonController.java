@@ -86,7 +86,7 @@ public class PersonController {
     @DeleteMapping("/face-recognition/people/{id}")
     public void delete(@PathVariable UUID id) {
         personService.findById(id).ifPresent(person -> {
-            faceRecognitionService.unregister(person.getName());
+            faceRecognitionService.unregister(person.getId());
             personService.delete(person);
         });
     }
@@ -107,8 +107,12 @@ public class PersonController {
         final byte[][] clone = {photo.clone()};
 
         faces.forEach(face -> {
-            Optional<Person> person = personService.findById(face.getId());
-            person.ifPresent(persons::add);
+            if (face.getId() != null) {
+                Optional<Person> person = personService.findById(face.getId());
+                person.ifPresent(persons::add);
+            } else {
+                LOGGER.info("Id is NULL");
+            }
 
             clone[0] = _writeRect(clone[0], face);
         });
@@ -147,10 +151,12 @@ public class PersonController {
         graphics2D.drawRect(face.getX(), face.getY(), face.getWidth(), face.getHeight());
         graphics2D.setFont(new Font("TimesRoman", Font.PLAIN, 16));
 
-        Optional<Person> person = personService.findById(face.getId());
-        person.ifPresent(person1 -> {
-            graphics2D.drawString(person1.getName(), face.getX(), face.getY());
-        });
+        if (face.getId() != null) {
+            Optional<Person> person = personService.findById(face.getId());
+            person.ifPresent(person1 -> {
+                graphics2D.drawString(person1.getName(), face.getX(), face.getY());
+            });
+        }
 
         ByteArrayOutputStream bos = new ByteArrayOutputStream();
 

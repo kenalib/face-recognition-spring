@@ -7,7 +7,6 @@ import org.bytedeco.javacpp.opencv_imgproc;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.core.io.Resource;
 import org.springframework.stereotype.Service;
 import org.springframework.util.FileCopyUtils;
@@ -27,7 +26,7 @@ import java.util.UUID;
 @Service
 public class FaceRecognitionService {
     private static final Logger LOGGER = LoggerFactory.getLogger(FaceRecognitionService.class);
-    private static final String ALIFACE_DB_NAME = "visitor";
+    private static final String ALIFACE_DB_NAME = "people";
 
     @Value("classpath:aliface/configure.txt")
     private Resource aliFaceConfigResource;
@@ -119,6 +118,8 @@ public class FaceRecognitionService {
             }
 
             // Register the face
+            LOGGER.warn("ADDING " + id);
+
             aliface.SingleFaceReigisterInfo faceRegistrationInfo = new aliface.SingleFaceReigisterInfo();
             faceRegistrationInfo.IDFaceDatabase().putString(ALIFACE_DB_NAME);
             faceRegistrationInfo.IDName().putString(id.toString());
@@ -149,6 +150,7 @@ public class FaceRecognitionService {
 
         ArrayList<RecognizedFace> faces = new ArrayList<>();
 
+        // Open the image in a format compatible with OpenCV and resize it in order to have normalized size
         try {
             originalImage = opencv_imgcodecs.cvLoadImage(photoFile.getAbsolutePath());
             image = _resizeImage(originalImage);
@@ -165,18 +167,21 @@ public class FaceRecognitionService {
             for (long i = 0; i < nbFaces[0]; i++) {
                 aliface.SingleFaceResult faceResult = faceResults.position(i);
 
-                if (faceResults.decision() == 0) {
-                    UUID uuid = UUID.fromString(faceResult.IDName().getString());
+                UUID uuid = null;
 
-                    RecognizedFace face = new RecognizedFace(
-                            faceResult.sFacePos().left(),
-                            faceResult.sFacePos().top(),
-                            faceResult.sFacePos().right() - faceResult.sFacePos().left(),
-                            faceResult.sFacePos().bottom() - faceResult.sFacePos().top(),
-                            uuid
-                    );
-                    faces.add(face);
+                if (faceResults.decision() == 0) {
+                    uuid = UUID.fromString(faceResult.IDName().getString());
                 }
+
+                RecognizedFace face = new RecognizedFace(
+                        faceResult.sFacePos().left(),
+                        faceResult.sFacePos().top(),
+                        faceResult.sFacePos().right() - faceResult.sFacePos().left(),
+                        faceResult.sFacePos().bottom() - faceResult.sFacePos().top(),
+                        uuid
+                );
+
+                faces.add(face);
             }
         } finally {
             releaseImageIfNotNull(originalImage);
@@ -238,18 +243,25 @@ public class FaceRecognitionService {
         }
     }
 
-    public void unregister(String id) {
+    public void unregister(UUID id) {
         synchronized(aliFaceLock) {
             _unregister(id);
         }
     }
 
-    private void _unregister(String id) {
-        aliface.SingleFaceReigisterInfo faceRegistrationInfo = new aliface.SingleFaceReigisterInfo();
-        faceRegistrationInfo.IDFaceDatabase().putString(ALIFACE_DB_NAME);
-        faceRegistrationInfo.IDName().putString(id);
+    private void _unregister(UUID id) {
+        LOGGER.warn("DELETING " + id);
 
-        if (recognitionLocal.DeleteRegisteredID(faceRegistrationInfo) == 0) {
+        aliface.SingleFaceReigisterInfo faceRegistrationInfo = new aliface.SingleFaceReigisterInfo(1);
+        faceRegistrationInfo.IDFaceDatabase().putString(ALIFACE_DB_NAME);
+        faceRegistrationInfo.IDName().putString(id.toString());
+
+        int result = recognitionLocal.DeleteRegisteredID(faceRegistrationInfo);
+
+        if (result == 0) {
+            LOGGER.info("Delete success {}", id);
+        } else {
+            // TODO: always 1
             LOGGER.warn("Unable to unregister the face with the ID: {}", id);
         }
     }
