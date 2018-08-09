@@ -9,47 +9,41 @@
 
 <h1>Face Recognition Demo</h1>
 
+This page is for debug.
 
-<h2>API</h2>
-
-<ul>
-    <li><a href="/face-recognition/people">people list</a></li>
-</ul>
 
 <hr>
 
 
+<h2>get list</h2>
+
+<a href="/face-recognition/people">people list</a>
+
+
 <h2>create</h2>
 
-<form method="post" enctype="multipart/form-data" action="/face-recognition/people">
+<form method="post" enctype="multipart/form-data" action="/face-recognition/people.form">
     name: <input type="text" name="name"/><br>
     photo: <input type="file" name="photo"/><br>
     <input type="submit"/>
 </form>
 
 
-<h2>find text</h2>
+<h2>find faces json</h2>
 
-<form method="post" enctype="multipart/form-data" action="/face-recognition/findAllInImage">
+<form method="post" enctype="multipart/form-data" action="/face-recognition/find-faces.form">
     photo: <input type="file" name="photo"/><br>
     <input type="submit"/>
 </form>
 
 
-<h2>find photo</h2>
+<h2>find faces photo</h2>
 
-<form method="post" enctype="multipart/form-data" action="/face-recognition/findAllInImagePhoto">
+<form method="post" enctype="multipart/form-data" action="/face-recognition/find-faces.jpeg">
     photo: <input type="file" name="photo"/><br>
     <input type="submit"/>
 </form>
 
-
-<h2>find base64</h2>
-
-<form method="post" enctype="multipart/form-data" action="/face-recognition/findAllInImageBase64">
-    photo: <input type="file" name="photo"/><br>
-    <input type="submit"/>
-</form>
 
 </body>
 </html>
