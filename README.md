@@ -1,7 +1,8 @@
 
 # Face Recognition Demo (backend)
 
-* Live demo https://faceapp.tk/
+NOTE: Files in aliface-wrapper directory are not in this repo since it is Alibaba product.
+Therefore some of maven dependencies will not be resolved.
 
 This is backend. The frontend is here -> https://github.com/kenalib/face-recognition-angular
 
